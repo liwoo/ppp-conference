@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "129641588099",
+    "firebase_url": "https://ppp-conference-app.firebaseio.com",
+    "project_id": "ppp-conference-app",
+    "storage_bucket": "ppp-conference-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:129641588099:android:44f9c330fa950d623042b6",
+        "android_client_info": {
+          "package_name": "com.dartsmw.ppp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "129641588099-n3q9522rprvsdrc066djtsfl0rq3stll.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeYQo33liuKveWsexOfLHPY_3lZRUPMR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "129641588099-n3q9522rprvsdrc066djtsfl0rq3stll.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "129641588099-03kmeo035vq7a3b7ne6qbe8klufrvil1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dartsmw.ppp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
