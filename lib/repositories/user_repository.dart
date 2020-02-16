@@ -1,36 +1,71 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ppp_conference/models/user.dart';
+import 'package:ppp_conference/repositories/user_schedule_repository.dart';
 
 abstract class IUserRepository {
-  Future<User> fetchUser(userID);
-  Future<void> addBookmark(String slotID, String userID);
+  Future<List<String>> connectionRequestsMade(userID);
+  Future<List<String>> likedSlots(userID);
+  Future<List<String>> dislikedSlots(userID);
+  Future<List<String>> bookmarkedSlots(userID);
+  Future<List<String>> connectionRequestsReceived(userID);
+  Future<bool> isRegistered(userID);
 }
 
 class UserRepository implements IUserRepository {
-  static const String path = 'users';
+  static const String path = 'attendees';
 
   final Firestore firestore;
   const UserRepository(this.firestore);
 
-  Future<User> fetchUser(userID) async {
-    final user = await firestore
-        .collection(path)
-        .document(userID)
-        .get()
-        .then((DocumentSnapshot snap) {
-      return User.fromSnapshot(snap);
+  Future<bool> isRegistered(userID) async {
+    return firestore.collection(path).document(userID).get().then((res) {
+      return res.exists;
     });
-    return user;
   }
 
-  Future<void> addBookmark(String slotID, String userID) async {
-    User user = await fetchUser(userID);
-    if (!user.bookmarks.contains(slotID)) {
-      user.bookmarks.add(slotID);
-      await firestore
-          .collection(path)
-          .document(userID)
-          .updateData({'bookmarks': user.bookmarks});
-    }
+  Future<List<String>> likedSlots(userID) async {
+    return firestore
+        .collection(UserScheduleRepository.path)
+        .where('likes', arrayContains: userID)
+        .getDocuments()
+        .then((QuerySnapshot snap) {
+      List<String> liked = snap.documents.map((DocumentSnapshot doc) {
+        return doc.documentID;
+      }).toList();
+      return liked;
+    });
+  }
+
+  Future<List<String>> dislikedSlots(userID) async {
+    return firestore
+        .collection(UserScheduleRepository.path)
+        .where('dislikes', arrayContains: userID)
+        .getDocuments()
+        .then((QuerySnapshot snap) {
+      List<String> liked = snap.documents.map((DocumentSnapshot doc) {
+        return doc.documentID;
+      }).toList();
+      return liked;
+    });
+  }
+
+  Future<List<String>> bookmarkedSlots(userID) async {
+    return firestore
+        .collection(UserScheduleRepository.path)
+        .where('bookmarks', arrayContains: userID)
+        .getDocuments()
+        .then((QuerySnapshot snap) {
+      List<String> liked = snap.documents.map((DocumentSnapshot doc) {
+        return doc.documentID;
+      }).toList();
+      return liked;
+    });
+  }
+
+  connectionRequestsMade(userID) async {
+    // TODO:
+  }
+
+  Future<List<String>> connectionRequestsReceived(userID) {
+    // TODO:
   }
 }
