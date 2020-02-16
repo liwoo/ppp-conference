@@ -1,22 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ppp_conference/models/slot.dart';
-import 'package:ppp_conference/repositories/user_repository.dart';
 
-abstract class IScheduleRepository {
+abstract class IUserScheduleRepository {
   Future<List<Slot>> fetchDailySlots(DateTime day, String userID);
-  Future<Slot> fetchSlot(String slotID, String userID);
   void likeSlot(String slotID, String userID);
   void dislikeSlot(String slotID, String userID);
   void bookmarkSlot(String slotID, String userID);
 }
 
-class ScheduleRepository implements IScheduleRepository {
+class UserScheduleRepository implements IUserScheduleRepository {
   static const String path = 'slots';
 
   final Firestore firestore;
-  final IUserRepository userRepository;
 
-  const ScheduleRepository(this.firestore, {this.userRepository});
+  const UserScheduleRepository(this.firestore);
 
   Future<void> addNewSlot(Slot slot) {
     return firestore.collection(path).document(slot.id).setData(slot.toJson());
@@ -30,7 +27,7 @@ class ScheduleRepository implements IScheduleRepository {
         .getDocuments();
 
     return slots.documents.map((doc) {
-      return Slot.fromSnapshot(doc);
+      return Slot.fromSnapshot(doc, userID);
     }).toList();
   }
 
@@ -40,35 +37,56 @@ class ScheduleRepository implements IScheduleRepository {
         .document(slotID)
         .get()
         .then((DocumentSnapshot snap) {
-      return Slot.fromSnapshot(snap);
+      return Slot.fromSnapshot(snap, userID);
     });
     return slot;
   }
 
+  _fetchSlotDetails(String slotID, String userID) async {
+    return firestore
+        .collection(path)
+        .document(slotID)
+        .get()
+        .then((DocumentSnapshot snap) {
+      Map<String, dynamic> slot = {
+        'likes': snap.data['likes'] ?? [],
+        'dislikes': snap.data['dislikes'] ?? [],
+        'bookmarks': snap.data['bookmarks'] ?? []
+      };
+      return slot;
+    });
+  }
+
   Future<void> likeSlot(String slotID, String userID) async {
-    final slot = await fetchSlot(slotID, userID);
-    if (!slot.likes.contains(userID)) {
-      slot.likes.add(userID);
+    final slot = await _fetchSlotDetails(slotID, userID);
+    if (!slot['likes'].contains(userID)) {
+      slot['likes'].add(userID);
       await firestore
           .collection(path)
           .document(slotID)
-          .updateData({'likes': slot.likes});
+          .updateData({'likes': slot['likes']});
     }
   }
 
   Future<void> dislikeSlot(String slotID, String userID) async {
-    final slot = await fetchSlot(slotID, userID);
-    if (!slot.dislikes.contains(userID)) {
-      slot.dislikes.add(userID);
+    final slot = await _fetchSlotDetails(slotID, userID);
+    if (!slot['dislikes'].contains(userID)) {
+      slot['dislikes'].add(userID);
       await firestore
           .collection(path)
           .document(slotID)
-          .updateData({'dislikes': slot.dislikes});
+          .updateData({'dislikes': slot['dislikes']});
     }
   }
 
   Future<void> bookmarkSlot(String slotID, String userID) async {
-    await userRepository.addBookmark(slotID, userID);
-    // TODO: subscribes to a slot_id_topic;
+    final slot = await _fetchSlotDetails(slotID, userID);
+    if (!slot['bookmarks'].contains(userID)) {
+      slot['bookmarks'].add(userID);
+      await firestore
+          .collection(path)
+          .document(slotID)
+          .updateData({'bookmarks': slot['bookmarks']});
+    }
   }
 }

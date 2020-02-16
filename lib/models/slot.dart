@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ppp_conference/models/user.dart';
 
 class Slot {
   String id;
@@ -7,29 +6,48 @@ class Slot {
   String summary;
   DateTime startTime;
   DateTime endTime;
-  User user;
-  List<String> likes;
-  List<String> dislikes;
+  bool isLiked, isDisliked, isBookmarked;
+  String slotCategory;
+  List<String> slotFacilitators;
+  List<String> slotPanelists;
+  List<String> slotSpeaker;
   Slot(
       {this.id,
       this.name,
       this.endTime,
       this.startTime,
       this.summary,
-      this.user,
-      this.likes,
-      this.dislikes});
+      this.isBookmarked,
+      this.isLiked,
+      this.isDisliked,
+      this.slotCategory,
+      this.slotFacilitators,
+      this.slotPanelists,
+      this.slotSpeaker});
 
-  factory Slot.fromSnapshot(DocumentSnapshot snap) {
+  factory Slot.fromSnapshot(DocumentSnapshot snap, String userId) {
     Timestamp startTimestamp = snap.data['startTime'];
     Timestamp endTimestamp = snap.data['endTime'];
+    bool isLiked = snap.data['likes'] != null
+        ? snap.data['likes'].contains(userId)
+        : false;
+    bool isDisliked = snap.data['dislikes'] != null
+        ? snap.data['dislikes'].contains(userId)
+        : false;
+    bool isBookmarked = snap.data['bookmarks'] != null
+        ? snap.data['bookmarks'].contains(userId)
+        : false;
     return Slot(
         id: snap.documentID,
-        name: snap.data['name'],
-        summary: snap.data['summary'],
-        user: snap.data['user'],
-        likes: snap.data['likes'] ?? [],
-        dislikes: snap.data['dislikes'] ?? [],
+        name: snap.data['name'] ?? '',
+        summary: snap.data['summary'] ?? '',
+        slotCategory: snap.data['slotCategory'] ?? '',
+        slotFacilitators: snap.data['slotFacilitators'] ?? [],
+        slotPanelists: snap.data['slotPanelists'] ?? [],
+        slotSpeaker: snap.data['slotSpeaker'] ?? [],
+        isBookmarked: isBookmarked,
+        isLiked: isLiked,
+        isDisliked: isDisliked,
         endTime: endTimestamp != null ? endTimestamp.toDate().toUtc() : null,
         startTime:
             startTimestamp != null ? startTimestamp.toDate().toUtc() : null);
@@ -42,14 +60,18 @@ class Slot {
       'endTime': endTime != null ? Timestamp.fromDate(endTime) : null,
       'startTime': startTime != null ? Timestamp.fromDate(startTime) : null,
       'summary': summary,
-      'likes': likes,
-      'dislikes': dislikes,
-      'user': user
+      'slotCategory': slotCategory,
+      'likes': [],
+      'dislikes': [],
+      'bookmarks': [],
+      'slotFacilitators': [],
+      'slotPanelists': [],
+      'slotSpeaker': [],
     };
   }
 
   @override
   String toString() {
-    return "id: $id, name: $name, endTime: $endTime, startTime: $startTime, summary: $summary, user: $user, likes: $likes, dislikes: $dislikes";
+    return "id: $id, name: $name, endTime: $endTime, startTime: $startTime, summary: $summary, slotCategory: $slotCategory, isLiked: $isLiked, isDisliked: $isDisliked, isBookmarked: $isBookmarked";
   }
 }
