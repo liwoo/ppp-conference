@@ -99,12 +99,14 @@ class _SlotContainerState extends State<SlotContainer> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             if (isHappeningNow) buildStatusLight(),
-            timeAndCategory(context),
+            if(widget.duration.inMinutes > 10) ...[
+              timeAndCategory(context)
+            ],
             if (widget.duration.inMinutes > 15) ...[
             SizedBox(
               height: 4,
             ),
-            Text('${widget.slot.name}',
+            Text('${widget.slot?.name ?? 'No Name Found'}',
                 style: Theme.of(context).textTheme.title),
             SizedBox(
               height: 4,
@@ -117,9 +119,9 @@ class _SlotContainerState extends State<SlotContainer> {
               SizedBox(
                 height: 8,
               ),
-              widget.slot.slotFacilitators != null
+              widget.slot.slotSpeakers != null
                   ? FutureBuilder(
-                      future: widget.slot.slotFacilitators[0].get(),
+                      future: widget.slot.slotSpeakers[0].get(),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasData) {
                           var user = Attendee.fromSnapshot(snapshot.data);

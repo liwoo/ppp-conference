@@ -241,7 +241,7 @@ class DaySchdule extends StatelessWidget {
                               SlotCategory.fromReference(snaphsot.data);
                           return SlotContainer(
                             slot: slot,
-                            category: category.name,
+                            category: category?.name ?? 'Error',
                             startTime: startTime,
                             changeExpanded: () => print('Expanding'),
                             color: HexColor.fromHex(category.color),
