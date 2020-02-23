@@ -38,46 +38,44 @@ class LoginScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).canvasColor,
         elevation: 0,
       ),
-      bottomSheet: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.2,
-          decoration: BoxDecoration(
-            color: Theme.of(context).accentColor,
-            borderRadius: BorderRadius.only(
-                topRight:Radius.circular(48),
-              topLeft:Radius.circular(48),
-            )
-          ),
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 100,
-                left: 100,
-                child: Container(
-                  width: 600,
-                  height: 600,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(300)),
-                    gradient: LinearGradient(
-                      colors: [
-                        Theme.of(context).primaryColor,
-                        Colors.blue
-                      ]
-                    )
-                  ),
+      bottomNavigationBar: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height * 0.2,
+        decoration: BoxDecoration(
+          color: Theme.of(context).accentColor,
+          borderRadius: BorderRadius.only(
+              topRight:Radius.circular(48),
+            topLeft:Radius.circular(48),
+          )
+        ),
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              top: 100,
+              left: 100,
+              child: Container(
+                width: 600,
+                height: 600,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(300)),
+                  gradient: LinearGradient(
+                    colors: [
+                      Theme.of(context).primaryColor,
+                      Colors.blue
+                    ]
+                  )
                 ),
               ),
-              Positioned(
-                top: 50,
-                left: 50,
-                child: Container(
-                  width: 70,
-                    height: 70,
-                    child: Image.asset('assets/icon-white.png',)),
-              )
-            ],
-          ),
+            ),
+            Positioned(
+              top: 50,
+              left: 50,
+              child: Container(
+                width: 70,
+                  height: 70,
+                  child: Image.asset('assets/icon-white.png',)),
+            )
+          ],
         ),
       ),
       body: GestureDetector(
