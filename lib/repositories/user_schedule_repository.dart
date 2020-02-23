@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ppp_conference/models/comment.dart';
 import 'package:ppp_conference/models/slot.dart';
 
 abstract class IUserScheduleRepository {
   Future<List<Slot>> fetchDailySlots(DateTime day, String userID);
+  Future<List<SlotCategory>> fetchAllCategories();
+  Future<List<SlotComment>> fetchSlotComments(String slotID);
   void likeSlot(String slotID, String userID);
   void dislikeSlot(String slotID, String userID);
   void bookmarkSlot(String slotID, String userID);
+  void addComment(String comment, String commenter, String slotID);
 }
 
 class UserScheduleRepository implements IUserScheduleRepository {
@@ -51,7 +55,8 @@ class UserScheduleRepository implements IUserScheduleRepository {
       Map<String, dynamic> slot = {
         'likes': snap.data['likes'] ?? [],
         'dislikes': snap.data['dislikes'] ?? [],
-        'bookmarks': snap.data['bookmarks'] ?? []
+        'bookmarks': snap.data['bookmarks'] ?? [],
+        'comments': snap.data['comments'] ?? [],
       };
       return slot;
     });
@@ -88,5 +93,41 @@ class UserScheduleRepository implements IUserScheduleRepository {
           .document(slotID)
           .updateData({'bookmarks': slot['bookmarks']});
     }
+  }
+
+  @override
+  Future<List<SlotCategory>> fetchAllCategories() async {
+    final categories = await firestore.collection('/categories').getDocuments();
+
+    return categories.documents.map((category) {
+      return SlotCategory.fromReference(category);
+    });
+  }
+
+  @override
+  void addComment(String comment, String commenter, String slotID) async {
+    final slot = await _fetchSlotDetails(slotID, commenter);
+    var commentDoc = await firestore
+        .collection('/comments')
+        .add({'comment': comment, 'commenter': commenter, 'slotID': slotID});
+
+    var updatedComments = slot['comments'].add(commentDoc);
+
+    await firestore
+        .collection(path)
+        .document(slotID)
+        .updateData({'comments': updatedComments});
+  }
+
+  @override
+  Future<List<SlotComment>> fetchSlotComments(String slotID) async {
+    final comments = await firestore
+        .collection('/comments')
+        .where("slotID", isEqualTo: slotID)
+        .getDocuments();
+
+    return comments.documents.map((doc) {
+      return SlotComment.fromSnapshot(doc);
+    }).toList();
   }
 }

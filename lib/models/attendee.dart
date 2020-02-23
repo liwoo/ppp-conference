@@ -6,6 +6,8 @@ class Attendee {
   String occupation;
   String organization;
   String country;
+  String countryEmoji;
+  String image;
   String profile;
   List<SocialMedia> socialMedia;
   Attendee(
@@ -14,11 +16,13 @@ class Attendee {
       this.occupation,
       this.organization,
       this.country,
+        this.countryEmoji,
+        this.image,
       this.profile,
       this.socialMedia});
 
   factory Attendee.fromSnapshot(DocumentSnapshot snap) {
-    List<Map<String, dynamic>> socials =
+    List<dynamic> socials =
         snap.data['socialMedia'] != null ? snap.data['socialMedia'] : [];
     List<SocialMedia> socialMedia = socials.map((social) {
       return SocialMedia.fromJson(social);
@@ -28,7 +32,9 @@ class Attendee {
         fullName: snap.data['fullName'] ?? '',
         occupation: snap.data['occupation'] ?? '',
         organization: snap.data['organization'] ?? '',
-        country: snap.data['country'] ?? '',
+        country: snap.data['country'] ?? 'No Country Specified',
+        countryEmoji: snap.data['countryEmoji'] ?? '🏳',
+        image: snap.data['image'] ?? 'https://res.cloudinary.com/tiyeni/image/upload/v1582367167/pppc_Logo.png',
         profile: snap.data['profile'] ?? '',
         socialMedia: socialMedia);
   }

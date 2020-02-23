@@ -4,13 +4,14 @@ class Slot {
   String id;
   String name;
   String summary;
+  String summaryHTML;
   DateTime startTime;
   DateTime endTime;
   bool isLiked, isDisliked, isBookmarked;
-  String slotCategory;
-  List<String> slotFacilitators;
-  List<String> slotPanelists;
-  List<String> slotSpeaker;
+  Future<DocumentSnapshot> category;
+  List<DocumentReference> slotFacilitators;
+  List<Future<DocumentSnapshot>> slotPanelists;
+  List<DocumentReference> slotSpeakers;
   Slot(
       {this.id,
       this.name,
@@ -20,14 +21,17 @@ class Slot {
       this.isBookmarked,
       this.isLiked,
       this.isDisliked,
-      this.slotCategory,
+      this.category,
+        this.summaryHTML,
       this.slotFacilitators,
       this.slotPanelists,
-      this.slotSpeaker});
+      this.slotSpeakers});
 
   factory Slot.fromSnapshot(DocumentSnapshot snap, String userId) {
     Timestamp startTimestamp = snap.data['startTime'];
     Timestamp endTimestamp = snap.data['endTime'];
+    var facilitators = snap.data['slotFacilitators'] != null ? snap.data['slotFacilitators'].cast<DocumentReference>() : null;
+    var speakers = snap.data['slotSpeakers'] != null ? snap.data['slotSpeakers'].cast<DocumentReference>() : null;
     bool isLiked = snap.data['likes'] != null
         ? snap.data['likes'].contains(userId)
         : false;
@@ -37,14 +41,17 @@ class Slot {
     bool isBookmarked = snap.data['bookmarks'] != null
         ? snap.data['bookmarks'].contains(userId)
         : false;
+    print(snap.documentID);
+    print(snap.data['slotFacilitators']);
     return Slot(
         id: snap.documentID,
         name: snap.data['name'] ?? '',
         summary: snap.data['summary'] ?? '',
-        slotCategory: snap.data['slotCategory'] ?? '',
-        slotFacilitators: snap.data['slotFacilitators'] ?? [],
-        slotPanelists: snap.data['slotPanelists'] ?? [],
-        slotSpeaker: snap.data['slotSpeaker'] ?? [],
+        summaryHTML: snap.data['summaryHTML'] ?? '',
+        category: snap.data['category'].get() ?? '',
+        slotFacilitators: facilitators,
+        slotPanelists: snap.data['slotPanelists'],
+        slotSpeakers: speakers,
         isBookmarked: isBookmarked,
         isLiked: isLiked,
         isDisliked: isDisliked,
@@ -60,7 +67,7 @@ class Slot {
       'endTime': endTime != null ? Timestamp.fromDate(endTime) : null,
       'startTime': startTime != null ? Timestamp.fromDate(startTime) : null,
       'summary': summary,
-      'slotCategory': slotCategory,
+      'category': category,
       'likes': [],
       'dislikes': [],
       'bookmarks': [],
@@ -72,6 +79,21 @@ class Slot {
 
   @override
   String toString() {
-    return "id: $id, name: $name, endTime: $endTime, startTime: $startTime, summary: $summary, slotCategory: $slotCategory, isLiked: $isLiked, isDisliked: $isDisliked, isBookmarked: $isBookmarked";
+    return "id: $id, name: $name, endTime: $endTime, startTime: $startTime, summary: $summary, slotCategory: $category, isLiked: $isLiked, isDisliked: $isDisliked, isBookmarked: $isBookmarked";
+  }
+}
+
+class SlotCategory {
+  String name;
+  String description;
+  String color;
+
+  SlotCategory({this.name, this.description, this.color});
+
+  factory SlotCategory.fromReference(DocumentSnapshot snap) {
+    return SlotCategory(
+        name: snap.data['name'] ?? 'No Name Proviced',
+        description: snap.data['description'] ?? 'No Description Provided',
+        color: snap.data['color'] ?? 'ffffff');
   }
 }

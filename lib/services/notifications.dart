@@ -16,8 +16,7 @@ class NotificationService implements IPushNotificationService {
 
   Stream<PPNotification> subscribeToTopic(String topic) {
     _firebaseMessaging.subscribeToTopic(topic);
-    //   print('gibberish');
-    //   if (Platform.isIOS) iosPermission();
+    if (Platform.isIOS) iosPermission();
 
     _firebaseMessaging.getToken().then(print);
     _firebaseMessaging.configure(
