@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:ppp_conference/models/attendee.dart';
 import 'package:ppp_conference/models/comment.dart';
 import 'package:ppp_conference/models/slot.dart';
+import 'package:ppp_conference/presentation/forms.dart';
 import 'package:ppp_conference/screens/schedule/widgets/category.dart';
 import 'package:ppp_conference/screens/schedule/widgets/slot.dart';
 import 'package:ppp_conference/screens/speaker/details.dart';
@@ -426,7 +427,7 @@ class _CommentFormState extends State<CommentForm> {
                 ),
                 onPressed: () {
                   _controller.clear();
-                  dismissKeyboard(context);
+                  _dismissKeyboard(context);
                   print('Sending Message');
                 },
               )
@@ -437,11 +438,8 @@ class _CommentFormState extends State<CommentForm> {
     );
   }
 
-  void dismissKeyboard(BuildContext context) {
-    var currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus) {
-      currentFocus.unfocus();
-    }
+  void _dismissKeyboard(BuildContext context) {
+    dismissKeyboard(context);
     setState(() {
       _keyboardHeihgt = 0;
     });
