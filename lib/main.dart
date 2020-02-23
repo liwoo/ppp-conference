@@ -42,12 +42,11 @@ class LoginScreen extends StatelessWidget {
         width: double.infinity,
         height: MediaQuery.of(context).size.height * 0.2,
         decoration: BoxDecoration(
-          color: Theme.of(context).accentColor,
-          borderRadius: BorderRadius.only(
-              topRight:Radius.circular(48),
-            topLeft:Radius.circular(48),
-          )
-        ),
+            color: Theme.of(context).accentColor,
+            borderRadius: BorderRadius.only(
+              topRight: Radius.circular(48),
+              topLeft: Radius.circular(48),
+            )),
         child: Stack(
           children: <Widget>[
             Positioned(
@@ -57,23 +56,20 @@ class LoginScreen extends StatelessWidget {
                 width: 600,
                 height: 600,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(300)),
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Colors.blue
-                    ]
-                  )
-                ),
+                    borderRadius: BorderRadius.all(Radius.circular(300)),
+                    gradient: LinearGradient(
+                        colors: [Theme.of(context).primaryColor, Colors.blue])),
               ),
             ),
             Positioned(
               top: 50,
               left: 50,
               child: Container(
-                width: 70,
+                  width: 70,
                   height: 70,
-                  child: Image.asset('assets/icon-white.png',)),
+                  child: Image.asset(
+                    'assets/icon-white.png',
+                  )),
             )
           ],
         ),
@@ -122,19 +118,21 @@ class LoginScreen extends StatelessWidget {
               children: <Widget>[
                 Checkbox(
                   value: false,
-                  onChanged: (value) => print('get new value and change to true'),
+                  onChanged: (value) =>
+                      print('get new value and change to true'),
                 ),
                 RichText(
                   text: TextSpan(
-                    style: Theme.of(context).textTheme.body1.copyWith(color: Colors.grey[700]),
-                    text: 'I agree to the terms of the ',
-                    children: [
-                      TextSpan(
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        text: 'Privacy Policy'
-                      )
-                    ]
-                  ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .body1
+                          .copyWith(color: Colors.grey[700]),
+                      text: 'I agree to the terms of the ',
+                      children: [
+                        TextSpan(
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                            text: 'Privacy Policy')
+                      ]),
                 )
               ],
             )
@@ -175,7 +173,8 @@ class LoginScreen extends StatelessWidget {
             child: IconButton(
               color: Colors.white,
               icon: Icon(Icons.arrow_forward),
-              onPressed: () => print('sending phone number'),
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => PhonePin())),
             ),
           ),
         )
@@ -196,6 +195,93 @@ class LoginScreen extends StatelessWidget {
         style: TextStyle(color: Colors.white),
       ),
       onPressed: onPressed,
+    );
+  }
+}
+
+
+//TODO: Create Controllers for each box and make sure to switch to the next when a pin has been filled
+//TODO: Automatically submit when all numbers are filled
+class PhonePin extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.grey[700]),
+          backgroundColor: Theme.of(context).canvasColor,
+          elevation: 0,
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('📲', style: Theme.of(context).textTheme.display3.copyWith(fontSize: 84),),
+              SizedBox(
+                height: 24,
+              ),
+              Text(
+                'OTP Verification',
+                style: Theme.of(context).textTheme.title,
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              RichText(
+                text: TextSpan(
+                    style: Theme.of(context).textTheme.body1,
+                    text: 'Enter the OTP sent to ',
+                    children: [
+                      TextSpan(
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          text: '+250 784 717 438')
+                    ]),
+              ),
+              SizedBox(
+                height: 24,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  buildPinField(context),
+                  buildPinField(context),
+                  buildPinField(context),
+                  buildPinField(context),
+                ],
+              ),
+              SizedBox(
+                height: 48,
+              ),
+              RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.body1,
+                  text: 'Did not receive the OTP? ',
+                  children: [
+                    TextSpan(
+                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                      text: 'RESEND OTP'
+                    )
+                  ]
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  Container buildPinField(BuildContext context) {
+    return Container(
+      width: 50,
+      height: 50,
+      child: TextField(
+        autofocus: true,
+        keyboardType: TextInputType.numberWithOptions(),
+        textAlign: TextAlign.center,
+        maxLength: 1,
+        decoration: InputDecoration(
+          counterText: ''
+        ),
+        style: Theme.of(context).textTheme.display1,
+      ),
     );
   }
 }
