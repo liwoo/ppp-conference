@@ -21,7 +21,7 @@ class PPPConference extends StatelessWidget {
                   fontWeight: FontWeight.bold, color: Colors.grey[600]),
               display1: TextStyle(fontSize: 28, fontWeight: FontWeight.w400))),
       title: 'PPP Conference App 2020',
-      home: LoginScreen(),
+      home: Register(),
     );
   }
 }
@@ -38,42 +38,7 @@ class LoginScreen extends StatelessWidget {
         backgroundColor: Theme.of(context).canvasColor,
         elevation: 0,
       ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        height: MediaQuery.of(context).size.height * 0.2,
-        decoration: BoxDecoration(
-            color: Theme.of(context).accentColor,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(48),
-              topLeft: Radius.circular(48),
-            )),
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              top: 100,
-              left: 100,
-              child: Container(
-                width: 600,
-                height: 600,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(300)),
-                    gradient: LinearGradient(
-                        colors: [Theme.of(context).primaryColor, Colors.blue])),
-              ),
-            ),
-            Positioned(
-              top: 50,
-              left: 50,
-              child: Container(
-                  width: 70,
-                  height: 70,
-                  child: Image.asset(
-                    'assets/icon-white.png',
-                  )),
-            )
-          ],
-        ),
-      ),
+      bottomNavigationBar: LoginBottomSheet(factor: 0.2),
       body: GestureDetector(
         onTap: () => dismissKeyboard(context),
         child: ListView(
@@ -100,13 +65,11 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 60,
             ),
-            buildLoginButton(
-                'Sign in with Google', Color(0xFFC84949), _loginToGoogle),
+            LoginButton(title: 'Sign in with Google', color: Color(0xFFC84949), onPressed: _loginToGoogle),
             SizedBox(
               height: 24,
             ),
-            buildLoginButton(
-                'Sign in with Apple', Colors.grey[900], _loginToGoogle),
+            LoginButton(title: 'Sign in with Apple', color: Colors.grey[900], onPressed: _loginToGoogle),
             SizedBox(
               height: 24,
             ),
@@ -181,9 +144,70 @@ class LoginScreen extends StatelessWidget {
       ],
     );
   }
+}
 
-  MaterialButton buildLoginButton(
-      String title, Color color, Function onPressed) {
+class LoginBottomSheet extends StatelessWidget {
+  final double factor;
+  const LoginBottomSheet({
+    @required this.factor,
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height * factor,
+      decoration: BoxDecoration(
+          color: Theme.of(context).accentColor,
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(48),
+            topLeft: Radius.circular(48),
+          )),
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            top: 100,
+            left: 100,
+            child: Container(
+              width: 600,
+              height: 600,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(300)),
+                  gradient: LinearGradient(
+                      colors: [Theme.of(context).primaryColor, Colors.blue])),
+            ),
+          ),
+          Positioned(
+            top: 50,
+            left: 50,
+            child: Container(
+                width: 70,
+                height: 70,
+                child: Image.asset(
+                  'assets/icon-white.png',
+                )),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({
+    Key key,
+    @required this.title,
+    @required this.color,
+    @required this.onPressed,
+  }) : super(key: key);
+
+  final String title;
+  final Color color;
+  final Function onPressed;
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialButton(
       padding: EdgeInsets.symmetric(vertical: 18),
       shape: RoundedRectangleBorder(
@@ -281,6 +305,56 @@ class PhonePin extends StatelessWidget {
           counterText: ''
         ),
         style: Theme.of(context).textTheme.display1,
+      ),
+    );
+  }
+}
+
+class Register extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).canvasColor,
+        elevation: 0,
+      ),
+      bottomNavigationBar: LoginBottomSheet(factor: 0.4),
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text('Hmmmm...\nSeem like you aren\'t Registered',
+                style: Theme.of(context)
+                    .textTheme
+                    .display1
+                    .copyWith(fontWeight: FontWeight.bold)),
+            SizedBox(
+              height: 12,
+            ),
+            Row(
+              children: <Widget>[
+                Container(
+                  height: 3,
+                  width: 150,
+                  color: Colors.grey,
+                ),
+                Container()
+              ],
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            Text('Don\'t worry.  This could be a mistake on our end.  Please contact the administrator to rectify this problem.'),
+            SizedBox(
+              height: 24,
+            ),
+            Container(
+              width: double.infinity,
+              child: LoginButton(title: 'Logout and Try Again', color: Theme.of(context).primaryColor, onPressed: () => 'logging out',),
+            )
+          ],
+        ),
       ),
     );
   }
