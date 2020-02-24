@@ -41,7 +41,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user == null) {
         yield LoggedOutState();
       } else {
-        yield LoggedInState(user);
+        bool isRegistered = await userRepository.isRegistered(user);
+        if (isRegistered)
+          yield LoggedInState(user);
+        else {
+          await authRepository.logout();
+          yield UserNotRegisteredState(user);
+        }
       }
     }
     if (event is PhoneLogin) {
@@ -90,6 +96,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event is Logout) {
       await authRepository.logout();
       yield LoggedOutState();
+    }
+    if (event is LoginFailure) {
+      await authRepository.logout();
+      yield LoginFailed(event.error);
     }
   }
 }
