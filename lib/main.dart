@@ -80,8 +80,15 @@ class Splash extends StatelessWidget {
 
 class LoginScreen extends StatelessWidget {
   final String error;
+  final _scaffoldKey = new GlobalKey<ScaffoldState>();
   LoginScreen({this.error});
   final TextEditingController phoneLoginController = TextEditingController();
+  showError() async {
+    await Future.delayed(Duration(seconds: 1));
+    var snackBar = SnackBar(content: new Text(error));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
   @override
   Widget build(BuildContext context) {
     void _loginToGoogle() {
@@ -89,10 +96,11 @@ class LoginScreen extends StatelessWidget {
     }
 
     if (error != null) {
-      print(error);
+      showError();
     }
     return BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) => Scaffold(
+              key: _scaffoldKey,
               appBar: AppBar(
                 backgroundColor: Theme.of(context).canvasColor,
                 elevation: 0,
