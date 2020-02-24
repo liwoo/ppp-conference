@@ -97,5 +97,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await authRepository.logout();
       yield LoggedOutState();
     }
+    if (event is LoginFailure) {
+      await authRepository.logout();
+      yield LoginFailed(event.error);
+    }
   }
 }

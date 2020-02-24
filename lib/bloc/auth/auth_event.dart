@@ -30,6 +30,11 @@ class LoginSuccess extends AuthEvent {
   LoginSuccess(this.user) : super([user]);
 }
 
+class LoginFailure extends AuthEvent {
+  final String error;
+  LoginFailure(this.error) : super([error]);
+}
+
 class MobilePinSent extends AuthEvent {
   final String verificationId;
 

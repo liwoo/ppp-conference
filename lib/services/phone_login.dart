@@ -25,7 +25,7 @@ class PhoneLoginService {
           _authBloc.add(LoginSuccess(data.user));
           break;
         default:
-          print(data);
+          _authBloc.add(LoginFailure(data.error));
       }
     });
   }
