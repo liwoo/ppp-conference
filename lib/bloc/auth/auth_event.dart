@@ -41,3 +41,7 @@ class SubmitPin extends AuthEvent {
 
   SubmitPin(this.pin) : super([pin]);
 }
+
+class Logout extends AuthEvent {
+  Logout() : super([]);
+}

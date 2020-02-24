@@ -24,7 +24,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async* {
     if (event is InitializeAuth) {
       try {
-        // await authRepository.logout();
         FirebaseUser user = await authRepository.getUser();
         if (user == null) {
           yield LoggedOutState();
@@ -87,6 +86,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await authRepository.logout();
         yield UserNotRegisteredState(event.user);
       }
+    }
+    if (event is Logout) {
+      await authRepository.logout();
+      yield LoggedOutState();
     }
   }
 }
