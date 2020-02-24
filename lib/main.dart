@@ -1,7 +1,12 @@
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:ppp_conference/bloc/auth/bloc.dart';
 import 'package:ppp_conference/presentation/forms.dart';
+import 'package:ppp_conference/repositories/auth_repository.dart';
 import 'package:ppp_conference/screens/root.dart';
 
 void main() => runApp(PPPConference());
@@ -21,91 +26,192 @@ class PPPConference extends StatelessWidget {
                   fontWeight: FontWeight.bold, color: Colors.grey[600]),
               display1: TextStyle(fontSize: 28, fontWeight: FontWeight.w400))),
       title: 'PPP Conference App 2020',
-      home: Register(),
+      home: AuthorizationScreen(),
     );
   }
 }
 
-class LoginScreen extends StatelessWidget {
-  void _loginToGoogle() {
-    print('logging in');
+class AuthorizationScreen extends StatefulWidget {
+  @override
+  _AuthorizationScreenState createState() => _AuthorizationScreenState();
+}
+
+class _AuthorizationScreenState extends State<AuthorizationScreen> {
+  AuthBloc _authBloc;
+  @override
+  void initState() {
+    _authBloc = AuthBloc(
+        authRepository: AuthRepository(FirebaseAuth.instance,
+            googleSignIn: GoogleSignIn()));
+    _authBloc.add(InitializeAuth());
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+        create: (BuildContext context) => _authBloc,
+        child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+          if (state is LoggedOutState) {
+            return LoginScreen();
+          } else if (state is LoggedInState)
+            return RootScreen(title: 'Schedule');
+          else if (state is MobilePinSentState)
+            return PhonePin();
+          else if (state is LoginFailed)
+            return LoginScreen(error: state.error);
+          else if (state is UserNotRegisteredState) {
+            return Register();
+          } else
+            return Splash();
+        }));
+  }
+}
+
+class Splash extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).canvasColor,
-        elevation: 0,
-      ),
-      bottomNavigationBar: LoginBottomSheet(factor: 0.2),
-      body: GestureDetector(
-        onTap: () => dismissKeyboard(context),
-        child: ListView(
-          padding: EdgeInsets.all(18),
-          children: <Widget>[
-            Text('Login High Level\nPPP Conference',
-                style: Theme.of(context)
-                    .textTheme
-                    .display1
-                    .copyWith(fontWeight: FontWeight.bold)),
-            SizedBox(
-              height: 12,
-            ),
-            Row(
-              children: <Widget>[
-                Container(
-                  height: 3,
-                  width: 150,
-                  color: Colors.grey,
+        body: Center(
+      child: CircularProgressIndicator(),
+    ));
+  }
+}
+
+class LoginScreen extends StatelessWidget {
+  final String error;
+  LoginScreen({this.error});
+  final TextEditingController phoneLoginController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    final authBloc = BlocProvider.of<AuthBloc>(context);
+    void _loginToGoogle() {
+      authBloc.add(GoogleLogin());
+    }
+
+    if (error != null) {
+      print(error);
+    }
+    return BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) => Scaffold(
+              appBar: AppBar(
+                backgroundColor: Theme.of(context).canvasColor,
+                elevation: 0,
+              ),
+              bottomNavigationBar: Container(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height * 0.2,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).accentColor,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(48),
+                      topLeft: Radius.circular(48),
+                    )),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 100,
+                      left: 100,
+                      child: Container(
+                        width: 600,
+                        height: 600,
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(300)),
+                            gradient: LinearGradient(colors: [
+                              Theme.of(context).primaryColor,
+                              Colors.blue
+                            ])),
+                      ),
+                    ),
+                    Positioned(
+                      top: 50,
+                      left: 50,
+                      child: Container(
+                          width: 70,
+                          height: 70,
+                          child: Image.asset(
+                            'assets/icon-white.png',
+                          )),
+                    )
+                  ],
                 ),
-                Container()
-              ],
-            ),
-            SizedBox(
-              height: 60,
-            ),
-            LoginButton(title: 'Sign in with Google', color: Color(0xFFC84949), onPressed: _loginToGoogle),
-            SizedBox(
-              height: 24,
-            ),
-            LoginButton(title: 'Sign in with Apple', color: Colors.grey[900], onPressed: _loginToGoogle),
-            SizedBox(
-              height: 24,
-            ),
-            buildPhoneLogin(context),
-            SizedBox(
-              height: 12,
-            ),
-            Row(
-              children: <Widget>[
-                Checkbox(
-                  value: false,
-                  onChanged: (value) =>
-                      print('get new value and change to true'),
+              ),
+              body: GestureDetector(
+                onTap: () => dismissKeyboard(context),
+                child: ListView(
+                  padding: EdgeInsets.all(18),
+                  children: <Widget>[
+                    Text('Login High Level\nPPP Conference',
+                        style: Theme.of(context)
+                            .textTheme
+                            .display1
+                            .copyWith(fontWeight: FontWeight.bold)),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          height: 3,
+                          width: 150,
+                          color: Colors.grey,
+                        ),
+                        Container()
+                      ],
+                    ),
+                    SizedBox(
+                      height: 60,
+                    ),
+                    LoginButton(title: 'Sign in with Google', color: Color(0xFFC84949), onPressed: _loginToGoogle),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    LoginButton(title: 'Sign in with Apple', color: Colors.grey[900], onPressed: _loginToGoogle),
+                    SizedBox(
+                      height: 24,
+                    ),
+                    buildPhoneLogin(context),
+                    SizedBox(
+                      height: 12,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Checkbox(
+                          value: false,
+                          onChanged: (value) =>
+                              print('get new value and change to true'),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .body1
+                                  .copyWith(color: Colors.grey[700]),
+                              text: 'I agree to the terms of the ',
+                              children: [
+                                TextSpan(
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                    text: 'Privacy Policy')
+                              ]),
+                        )
+                      ],
+                    )
+                  ],
                 ),
-                RichText(
-                  text: TextSpan(
-                      style: Theme.of(context)
-                          .textTheme
-                          .body1
-                          .copyWith(color: Colors.grey[700]),
-                      text: 'I agree to the terms of the ',
-                      children: [
-                        TextSpan(
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            text: 'Privacy Policy')
-                      ]),
-                )
-              ],
-            )
-          ],
-        ),
-      ),
-    );
+              ),
+            ));
   }
 
   Row buildPhoneLogin(BuildContext context) {
+    final authBloc = BlocProvider.of<AuthBloc>(context);
+    void _phoneLogin() {
+      var phoneNumber = phoneLoginController.text;
+      authBloc.add(PhoneLogin(phoneNumber, context));
+      print('logging in');
+    }
+
     return Row(
       children: <Widget>[
         Flexible(
@@ -117,6 +223,7 @@ class LoginScreen extends StatelessWidget {
                 color: Colors.grey[400],
                 border: Border.all(color: Colors.grey[500])),
             child: TextField(
+              controller: phoneLoginController,
               keyboardType: TextInputType.numberWithOptions(),
               decoration: InputDecoration(
                   border: InputBorder.none, hintText: 'Or Enter Phone Number'),
@@ -136,8 +243,7 @@ class LoginScreen extends StatelessWidget {
             child: IconButton(
               color: Colors.white,
               icon: Icon(Icons.arrow_forward),
-              onPressed: () => Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => PhonePin())),
+              onPressed: _phoneLogin,
             ),
           ),
         )
@@ -223,10 +329,25 @@ class LoginButton extends StatelessWidget {
   }
 }
 
+class PhonePin extends StatefulWidget {
+  @override
+  _PhonePinState createState() => _PhonePinState();
+}
 
-//TODO: Create Controllers for each box and make sure to switch to the next when a pin has been filled
-//TODO: Automatically submit when all numbers are filled
-class PhonePin extends StatelessWidget {
+class _PhonePinState extends State<PhonePin> {
+  TextEditingController t1 = TextEditingController();
+  TextEditingController t2 = TextEditingController();
+  TextEditingController t3 = TextEditingController();
+  TextEditingController t4 = TextEditingController();
+  TextEditingController t5 = TextEditingController();
+  TextEditingController t6 = TextEditingController();
+  FocusNode f1 = FocusNode();
+  FocusNode f2 = FocusNode();
+  FocusNode f3 = FocusNode();
+  FocusNode f4 = FocusNode();
+  FocusNode f5 = FocusNode();
+  FocusNode f6 = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -239,7 +360,11 @@ class PhonePin extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('📲', style: Theme.of(context).textTheme.display3.copyWith(fontSize: 84),),
+              Text(
+                '📲',
+                style:
+                    Theme.of(context).textTheme.display3.copyWith(fontSize: 84),
+              ),
               SizedBox(
                 height: 24,
               ),
@@ -266,10 +391,12 @@ class PhonePin extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  buildPinField(context),
-                  buildPinField(context),
-                  buildPinField(context),
-                  buildPinField(context),
+                  buildPinField(context, t1, f1),
+                  buildPinField(context, t2, f2),
+                  buildPinField(context, t3, f3),
+                  buildPinField(context, t4, f4),
+                  buildPinField(context, t5, f5),
+                  buildPinField(context, t6, f6),
                 ],
               ),
               SizedBox(
@@ -277,22 +404,32 @@ class PhonePin extends StatelessWidget {
               ),
               RichText(
                 text: TextSpan(
-                  style: Theme.of(context).textTheme.body1,
-                  text: 'Did not receive the OTP? ',
-                  children: [
-                    TextSpan(
-                      style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                      text: 'RESEND OTP'
-                    )
-                  ]
-                ),
+                    style: Theme.of(context).textTheme.body1,
+                    text: 'Did not receive the OTP? ',
+                    children: [
+                      TextSpan(
+                          style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.bold),
+                          text: 'RESEND OTP')
+                    ]),
               )
             ],
           ),
         ));
   }
 
-  Container buildPinField(BuildContext context) {
+  Container buildPinField(BuildContext context,
+      TextEditingController controller, FocusNode focusNode) {
+    void submit() {
+      final authBloc = BlocProvider.of<AuthBloc>(context);
+
+      var pin = "${t1.text}${t2.text}${t3.text}${t4.text}${t5.text}${t6.text}";
+      print(t1.text);
+      print(pin);
+      authBloc.add(SubmitPin(pin));
+    }
+
     return Container(
       width: 50,
       height: 50,
@@ -301,9 +438,18 @@ class PhonePin extends StatelessWidget {
         keyboardType: TextInputType.numberWithOptions(),
         textAlign: TextAlign.center,
         maxLength: 1,
-        decoration: InputDecoration(
-          counterText: ''
-        ),
+        controller: controller,
+        onChanged: (val) {
+          if (val.length > 0) {
+            if (focusNode == f6) {
+              submit();
+            } else {
+              focusNode.nextFocus();
+            }
+          }
+        },
+        focusNode: focusNode,
+        decoration: InputDecoration(counterText: ''),
         style: Theme.of(context).textTheme.display1,
       ),
     );

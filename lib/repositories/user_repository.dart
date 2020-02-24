@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ppp_conference/repositories/user_schedule_repository.dart';
 
 abstract class IUserRepository {
@@ -7,7 +8,7 @@ abstract class IUserRepository {
   Future<List<String>> dislikedSlots(userID);
   Future<List<String>> bookmarkedSlots(userID);
   Future<List<String>> connectionRequestsReceived(userID);
-  Future<bool> isRegistered(userID);
+  Future<bool> isRegistered(FirebaseUser user);
 }
 
 class UserRepository implements IUserRepository {
@@ -16,10 +17,24 @@ class UserRepository implements IUserRepository {
   final Firestore firestore;
   const UserRepository(this.firestore);
 
-  Future<bool> isRegistered(userID) async {
-    return firestore.collection(path).document(userID).get().then((res) {
-      return res.exists;
-    });
+  Future<bool> isRegistered(user) async {
+    if (user.phoneNumber != null) {
+      return firestore
+          .collection(path)
+          .where('phoneNumber', isEqualTo: user.phoneNumber)
+          .getDocuments()
+          .then((res) {
+        return res.documents.length > 0;
+      });
+    } else {
+      return firestore
+          .collection(path)
+          .where('email', isEqualTo: user.email)
+          .getDocuments()
+          .then((res) {
+        return res.documents.length > 0;
+      });
+    }
   }
 
   Future<List<String>> likedSlots(userID) async {
