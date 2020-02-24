@@ -427,8 +427,6 @@ class _PhonePinState extends State<PhonePin> {
       TextEditingController controller, FocusNode focusNode) {
     void submit() {
       var pin = "${t1.text}${t2.text}${t3.text}${t4.text}${t5.text}${t6.text}";
-      print(t1.text);
-      print(pin);
       BlocProvider.of<AuthBloc>(context).add(SubmitPin(pin));
     }
 
