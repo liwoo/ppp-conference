@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ppp_conference/bloc/auth/bloc.dart';
 import 'package:ppp_conference/models/attendee.dart';
 import 'package:ppp_conference/models/slot.dart';
 import 'package:ppp_conference/screens/schedule/details.dart';
@@ -74,10 +76,13 @@ class _SlotContainerState extends State<SlotContainer> {
   }
 
   Widget buildMiniSlot(BuildContext context, bool isHappeningNow) {
+    // ignore: close_sinks
+    var authBloc = BlocProvider.of<AuthBloc>(context);
     return GestureDetector(
       onTap: widget.category.toLowerCase() != 'refreshments'
           ? () => Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => SlotDetails(
+                authBloc: authBloc,
                     slot: widget.slot,
                     category: widget.category,
                 color: widget.color

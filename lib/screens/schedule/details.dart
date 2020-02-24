@@ -3,9 +3,9 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:ppp_conference/bloc/auth/bloc.dart';
 import 'package:ppp_conference/bloc/slot_comment/bloc.dart';
 import 'package:ppp_conference/models/attendee.dart';
-import 'package:ppp_conference/models/comment.dart';
 import 'package:ppp_conference/models/slot.dart';
 import 'package:ppp_conference/repositories/user_schedule_repository.dart';
 import 'package:ppp_conference/screens/comments/form.dart';
@@ -18,8 +18,10 @@ class SlotDetails extends StatefulWidget {
   final Slot slot;
   final String category;
   final Color color;
+  final AuthBloc authBloc;
 
-  const SlotDetails({Key key, this.slot, this.category, this.color})
+  const SlotDetails(
+      {Key key, this.slot, this.category, this.color, this.authBloc})
       : super(key: key);
 
   @override
@@ -32,6 +34,7 @@ class _SlotDetailsState extends State<SlotDetails> {
   @override
   void initState() {
     _commentBloc = CommentBloc(
+        authBloc: widget.authBloc,
         userScheduleRepository: UserScheduleRepository(Firestore.instance));
     _commentBloc.add(InitializeComments(widget.slot.id));
     super.initState();

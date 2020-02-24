@@ -2,14 +2,17 @@ import 'dart:async';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:ppp_conference/bloc/auth/bloc.dart';
 import 'package:ppp_conference/models/comment.dart';
+import 'package:ppp_conference/repositories/auth_repository.dart';
 import 'package:ppp_conference/repositories/user_schedule_repository.dart';
 import './bloc.dart';
 
 class CommentBloc extends Bloc<CommentEvent, CommentState> {
   IUserScheduleRepository userScheduleRepository;
+  AuthBloc authBloc;
 
-  CommentBloc({@required this.userScheduleRepository});
+  CommentBloc({@required this.userScheduleRepository, @required this.authBloc});
 
   @override
   CommentState get initialState => LoadingCommentsState();
@@ -31,10 +34,11 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     }
 
     if(event is SendComment) {
+      var user = (authBloc.state as LoggedInState).user;
       var currentComments = (currentState as LoadedCommentsState).slotComments;
-      var commenter = 'Liwu';
-      var commenterImage = "https://res.cloudinary.com/tiyeni/image/upload/v1582367167/pppc_Logo.png";
-      var commenterID = 'Liwu';
+      var commenter = user.displayName;
+      var commenterImage = user.photoUrl;
+      var commenterID = user.uid;
       var newComment = SlotComment(
         commenterID: commenterID,
         comment: event.comment,

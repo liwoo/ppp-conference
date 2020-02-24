@@ -65,35 +65,42 @@ class UserScheduleRepository implements IUserScheduleRepository {
 
   Future<void> likeSlot(String slotID, String userID) async {
     final slot = await _fetchSlotDetails(slotID, userID);
-    if (!slot['likes'].contains(userID)) {
-      slot['likes'].add(userID);
-      await firestore
-          .collection(path)
-          .document(slotID)
-          .updateData({'likes': slot['likes']});
-    }
+    List likes = slot['likes'];
+    if (!likes.contains(userID)) {
+      likes.add(userID);
+    } else
+      likes.remove(userID);
+    await firestore
+        .collection(path)
+        .document(slotID)
+        .updateData({'likes': likes});
   }
 
   Future<void> dislikeSlot(String slotID, String userID) async {
     final slot = await _fetchSlotDetails(slotID, userID);
-    if (!slot['dislikes'].contains(userID)) {
-      slot['dislikes'].add(userID);
-      await firestore
-          .collection(path)
-          .document(slotID)
-          .updateData({'dislikes': slot['dislikes']});
-    }
+    List dislikes = slot['dislikes'];
+
+    if (!dislikes.contains(userID))
+      dislikes.add(userID);
+    else
+      dislikes.remove(userID);
+    await firestore
+        .collection(path)
+        .document(slotID)
+        .updateData({'dislikes': dislikes});
   }
 
   Future<void> bookmarkSlot(String slotID, String userID) async {
     final slot = await _fetchSlotDetails(slotID, userID);
-    if (!slot['bookmarks'].contains(userID)) {
-      slot['bookmarks'].add(userID);
-      await firestore
-          .collection(path)
-          .document(slotID)
-          .updateData({'bookmarks': slot['bookmarks']});
-    }
+    List bookmarks = slot['bookmarks'];
+    if (!bookmarks.contains(userID))
+      bookmarks.add(userID);
+    else
+      bookmarks.remove(userID);
+    await firestore
+        .collection(path)
+        .document(slotID)
+        .updateData({'bookmarks': bookmarks});
   }
 
   @override

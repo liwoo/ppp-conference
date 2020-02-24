@@ -37,16 +37,22 @@ class MobileLogin {
 }
 
 abstract class IAuthRepository {
+  Future<FirebaseUser> getUser();
   Future<FirebaseUser> socialLogin(SocialLoginMethod method);
   Stream<MobileLogin> requestMobileLoginPin(String phoneNumber);
   Future<FirebaseUser> mobileLogin(String verificationId, String smsCode);
-  Future<void> logout(userID);
+  Future<void> logout();
 }
 
 class AuthRepository implements IAuthRepository {
   final FirebaseAuth auth;
   final GoogleSignIn googleSignIn;
   const AuthRepository(this.auth, {this.googleSignIn});
+
+  Future<FirebaseUser> getUser() {
+    return auth.currentUser();
+  }
+
   Future<FirebaseUser> socialLogin(SocialLoginMethod method) async {
     AuthCredential credential;
     switch (method) {
@@ -129,7 +135,7 @@ class AuthRepository implements IAuthRepository {
     }
   }
 
-  Future<void> logout(userID) async {
+  Future<void> logout() async {
     return auth.signOut();
   }
 }
