@@ -84,9 +84,8 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController phoneLoginController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final authBloc = BlocProvider.of<AuthBloc>(context);
     void _loginToGoogle() {
-      authBloc.add(GoogleLogin());
+      BlocProvider.of<AuthBloc>(context).add(GoogleLogin());
     }
 
     if (error != null) {
@@ -205,10 +204,9 @@ class LoginScreen extends StatelessWidget {
   }
 
   Row buildPhoneLogin(BuildContext context) {
-    final authBloc = BlocProvider.of<AuthBloc>(context);
     void _phoneLogin() {
       var phoneNumber = phoneLoginController.text;
-      authBloc.add(PhoneLogin(phoneNumber, context));
+      BlocProvider.of<AuthBloc>(context).add(PhoneLogin(phoneNumber, context));
       print('logging in');
     }
 
@@ -422,12 +420,11 @@ class _PhonePinState extends State<PhonePin> {
   Container buildPinField(BuildContext context,
       TextEditingController controller, FocusNode focusNode) {
     void submit() {
-      final authBloc = BlocProvider.of<AuthBloc>(context);
 
       var pin = "${t1.text}${t2.text}${t3.text}${t4.text}${t5.text}${t6.text}";
       print(t1.text);
       print(pin);
-      authBloc.add(SubmitPin(pin));
+      BlocProvider.of<AuthBloc>(context).add(SubmitPin(pin));
     }
 
     return Container(
