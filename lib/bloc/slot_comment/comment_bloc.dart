@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:ppp_conference/models/comment.dart';
@@ -13,6 +14,8 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
   @override
   CommentState get initialState => LoadingCommentsState();
 
+  CommentState get currentState => this.state;
+
   @override
   Stream<CommentState> mapEventToState(
     CommentEvent event,
@@ -24,6 +27,28 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
       } catch (e) {
         print(e);
         yield FailedLoadingCommentsState();
+      }
+    }
+
+    if(event is SendComment) {
+      var currentComments = (currentState as LoadedCommentsState).slotComments;
+      var commenter = 'Liwu';
+      var commenterImage = "https://res.cloudinary.com/tiyeni/image/upload/v1582367167/pppc_Logo.png";
+      var commenterID = 'Liwu';
+      var newComment = SlotComment(
+        commenterID: commenterID,
+        comment: event.comment,
+        commenter: commenter, //Get this from Auth bloc
+        commenterImage: commenterImage,
+        time: DateTime.now()
+      );
+      yield SendingCommentState(newComment, event.slotId, currentComments);
+      try {
+        await userScheduleRepository.addComment(event.comment, commenter, event.slotId, event.commenterId);
+        yield SentCommentState([...currentComments, newComment], event.slotId);
+      } catch (e) {
+        print(e);
+        FailedSendingCommentState(currentComments, event.slotId);
       }
     }
   }

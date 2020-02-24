@@ -133,46 +133,53 @@ class DaySchdule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(top: 12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              buildTimeScale(timeScale),
-              buildSlots(daySlots
-                  .map((slot) => FutureBuilder(
-                      future: slot.category,
-                      builder: (BuildContext context, AsyncSnapshot snaphsot) {
-                        if (snaphsot.hasData) {
-                          var category =
-                              SlotCategory.fromReference(snaphsot.data);
+    return RefreshIndicator(
+      backgroundColor: Theme.of(context).accentColor,
+      color: Colors.white,
+      onRefresh: () async {
+        BlocProvider.of<ScheduleBloc>(context).add(InitializeSchedule('some-id'));
+      },
+      child: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                buildTimeScale(timeScale),
+                buildSlots(daySlots
+                    .map((slot) => FutureBuilder(
+                        future: slot.category,
+                        builder: (BuildContext context, AsyncSnapshot snaphsot) {
+                          if (snaphsot.hasData) {
+                            var category =
+                                SlotCategory.fromReference(snaphsot.data);
+                            return SlotContainer(
+                              slot: slot,
+                              category: category?.name ?? 'Error',
+                              startTime: startTime,
+                              changeExpanded: () => print('Expanding'),
+                              color: HexColor.fromHex(category.color),
+                              isExpanded: false,
+                            );
+                          }
+
                           return SlotContainer(
                             slot: slot,
-                            category: category?.name ?? 'Error',
+                            category: 'Uncategorized',
                             startTime: startTime,
                             changeExpanded: () => print('Expanding'),
-                            color: HexColor.fromHex(category.color),
+                            color: Colors.brown,
                             isExpanded: false,
                           );
-                        }
-
-                        return SlotContainer(
-                          slot: slot,
-                          category: 'Uncategorized',
-                          startTime: startTime,
-                          changeExpanded: () => print('Expanding'),
-                          color: Colors.brown,
-                          isExpanded: false,
-                        );
-                      }))
-                  .toList())
-            ],
-          ),
-        )
-      ],
+                        }))
+                    .toList())
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

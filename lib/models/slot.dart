@@ -41,8 +41,6 @@ class Slot {
     bool isBookmarked = snap.data['bookmarks'] != null
         ? snap.data['bookmarks'].contains(userId)
         : false;
-    print(snap.documentID);
-    print(snap.data['slotFacilitators']);
     return Slot(
         id: snap.documentID,
         name: snap.data['name'] ?? '',

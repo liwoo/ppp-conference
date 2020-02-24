@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ppp_conference/bloc/slot_comment/bloc.dart';
 import 'package:ppp_conference/screens/comments/list.dart';
 
 class CommentForm extends StatefulWidget {
+  final CommentBloc bloc;
   final Color color;
   final String slotId;
 
-  const CommentForm({Key key, @required this.color, @required this.slotId}) : super(key: key);
+  const CommentForm({Key key, @required this.bloc, @required this.color, @required this.slotId}) : super(key: key);
 
   @override
   _CommentFormState createState() => _CommentFormState();
@@ -43,7 +46,7 @@ class _CommentFormState extends State<CommentForm> {
         child: ListView(
           padding: EdgeInsets.all(18),
           children: <Widget>[
-            CommentList(context: context, myComments: comments, color: widget.color, slotId: 'Some Slot ID')
+            CommentList(bloc: widget.bloc, context: context, color: widget.color, slotId: widget.slotId)
           ],
         ),
       ),
@@ -102,9 +105,11 @@ class _CommentFormState extends State<CommentForm> {
                   color: Colors.grey[700],
                 ),
                 onPressed: () {
+                  var comment = _controller.text;
                   _controller.clear();
+                  widget.bloc.add(SendComment('someID', comment, widget.slotId));
                   dismissKeyboard(context);
-                  print('Sending Message');
+
                 },
               )
             ],

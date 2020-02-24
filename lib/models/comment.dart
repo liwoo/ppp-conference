@@ -2,19 +2,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SlotComment {
+  String commenterID;
   String comment;
   String commenter;
   String commenterImage;
   DateTime time;
 
-  SlotComment({this.comment, this.commenter, this.commenterImage, this.time});
+  SlotComment({this.comment, this.commenterID, this.commenter, this.commenterImage, this.time});
 
   factory SlotComment.fromSnapshot(DocumentSnapshot snap) {
+    Timestamp time = snap.data['time'];
     return SlotComment(
+      commenterID: snap.data['commenterID'] ?? '',
       comment: snap.data['comment'] ?? '',
-      commenter: snap.data['comment'] ?? '',
+      commenter: snap.data['commenter'] ?? '',
       commenterImage: snap.data['commenterImage'] ?? '',
-      time: snap.data['time'] ?? DateTime(2020, 2, 24, 8, 0)
+      time: time != null ? time.toDate().toUtc() : DateTime.now()
     );
   }
 }

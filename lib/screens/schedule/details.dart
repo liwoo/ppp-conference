@@ -31,7 +31,8 @@ class _SlotDetailsState extends State<SlotDetails> {
 
   @override
   void initState() {
-    _commentBloc = CommentBloc(userScheduleRepository: UserScheduleRepository(Firestore.instance));
+    _commentBloc = CommentBloc(
+        userScheduleRepository: UserScheduleRepository(Firestore.instance));
     _commentBloc.add(InitializeComments(widget.slot.id));
     super.initState();
   }
@@ -49,17 +50,12 @@ class _SlotDetailsState extends State<SlotDetails> {
           elevation: 0,
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.notifications),
-              onPressed: () => print('Setting Notification')
-            ),
+                icon: Icon(Icons.notifications),
+                onPressed: () => print('Setting Notification')),
             IconButton(
-                icon: Icon(Icons.thumb_up),
-                onPressed: () => print('Liking')
-            ),
+                icon: Icon(Icons.thumb_up), onPressed: () => print('Liking')),
             IconButton(
-                icon: Icon(Icons.thumb_down),
-                onPressed: () => print('Liking')
-            )
+                icon: Icon(Icons.thumb_down), onPressed: () => print('Liking'))
           ],
           iconTheme: IconThemeData(color: Colors.grey[800]),
         ),
@@ -71,14 +67,18 @@ class _SlotDetailsState extends State<SlotDetails> {
             onPressed: () => Navigator.of(context).push(MaterialPageRoute(
                 fullscreenDialog: true,
                 builder: (context) => CommentForm(
+                      bloc: _commentBloc,
                       color: widget.color,
-                      slotId: 'someID',
+                      slotId: widget.slot.id,
                     ))),
           ),
         ),
-        body: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
+        body: RefreshIndicator(
+          color: Colors.grey[800],
+          backgroundColor: widget.color,
+          onRefresh: () async {
+            _commentBloc.add(InitializeComments(widget.slot.id));
+          },
           child: ListView(
             padding: EdgeInsets.all(18),
             children: <Widget>[
@@ -144,16 +144,27 @@ class _SlotDetailsState extends State<SlotDetails> {
               SizedBox(
                 height: 24,
               ),
-              ...buildUserSection(context, 'Speakers', widget.slot.slotSpeakers),
+              ...buildUserSection(
+                  context, 'Speakers', widget.slot.slotSpeakers),
               ...buildUserSection(
                   context, 'Facilitators', widget.slot.slotFacilitators),
               ...buildUserSection(
                   context, 'Panelists', widget.slot.slotPanelists),
-              buildSectionTitle(context, 'Comments (35)'),
+              BlocBuilder<CommentBloc, CommentState>(builder: (context, state) {
+                if (state is LoadedCommentsState) {
+                  return buildSectionTitle(
+                      context, 'Comments(${state.slotComments.length})');
+                }
+                return buildSectionTitle(context, 'Comments');
+              }),
               SizedBox(
                 height: 12,
               ),
-              CommentList(context: context, myComments: comments, color: widget.color, slotId: widget.slot.id)
+              CommentList(
+                  bloc: _commentBloc,
+                  context: context,
+                  color: widget.color,
+                  slotId: widget.slot.id)
             ],
           ),
         ),

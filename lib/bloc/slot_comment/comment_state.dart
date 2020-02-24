@@ -42,13 +42,14 @@ class FailedLoadingCommentsState extends CommentState {
 }
 
 class SendingCommentState extends CommentState {
-  final SlotComment comment;
+  final SlotComment newComment;
+  final List<SlotComment> previousComments;
   final String slotId;
 
-  SendingCommentState(this.comment, this.slotId): super([comment, slotId]);
+  SendingCommentState(this.newComment, this.slotId, this.previousComments): super([newComment, slotId, previousComments]);
 
   @override
-  List<Object> get props => [comment, slotId];
+  List<Object> get props => [newComment, slotId, previousComments];
 
   @override
   String toString() {
@@ -57,13 +58,13 @@ class SendingCommentState extends CommentState {
 }
 
 class SentCommentState extends CommentState {
-  final SlotComment comment;
+  final List<SlotComment> newComments;
   final String slotId;
 
-  SentCommentState(this.comment, this.slotId): super([comment, slotId]);
+  SentCommentState(this.newComments, this.slotId): super([newComments, slotId]);
 
   @override
-  List<Object> get props => [comment, slotId];
+  List<Object> get props => [newComments, slotId];
 
   @override
   String toString() {
@@ -72,13 +73,13 @@ class SentCommentState extends CommentState {
 }
 
 class FailedSendingCommentState extends CommentState {
-  final SlotComment comment;
+  final List<SlotComment> oldComments;
   final String slotId;
 
-  FailedSendingCommentState(this.comment, this.slotId): super([comment, slotId]);
+  FailedSendingCommentState(this.oldComments, this.slotId): super([oldComments, slotId]);
 
   @override
-  List<Object> get props => [comment, slotId];
+  List<Object> get props => [oldComments, slotId];
 
   @override
   String toString() {

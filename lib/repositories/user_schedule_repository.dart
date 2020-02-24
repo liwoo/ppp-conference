@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_format/date_format.dart';
 import 'package:ppp_conference/models/comment.dart';
 import 'package:ppp_conference/models/slot.dart';
 
@@ -6,10 +7,10 @@ abstract class IUserScheduleRepository {
   Future<List<Slot>> fetchDailySlots(DateTime day, String userID);
   Future<List<SlotCategory>> fetchAllCategories();
   Future<List<SlotComment>> fetchSlotComments(String slotID);
-  void likeSlot(String slotID, String userID);
-  void dislikeSlot(String slotID, String userID);
-  void bookmarkSlot(String slotID, String userID);
-  void addComment(String comment, String commenter, String slotID);
+  Future<void> likeSlot(String slotID, String userID);
+  Future<void> dislikeSlot(String slotID, String userID);
+  Future<void> bookmarkSlot(String slotID, String userID);
+  Future<void> addComment(String comment, String commenter, String slotID, String commenterID);
 }
 
 class UserScheduleRepository implements IUserScheduleRepository {
@@ -105,18 +106,10 @@ class UserScheduleRepository implements IUserScheduleRepository {
   }
 
   @override
-  void addComment(String comment, String commenter, String slotID) async {
-    final slot = await _fetchSlotDetails(slotID, commenter);
-    var commentDoc = await firestore
-        .collection('/comments')
-        .add({'comment': comment, 'commenter': commenter, 'slotID': slotID});
-
-    var updatedComments = slot['comments'].add(commentDoc);
-
+  Future<void> addComment(String comment, String commenter, String slotID, String commenterID) async {
     await firestore
-        .collection(path)
-        .document(slotID)
-        .updateData({'comments': updatedComments});
+        .collection('/comments')
+        .add({'comment': comment, 'commenter': commenter, 'slotID': slotID, commenterID: commenterID, 'time': DateTime.now()});
   }
 
   @override
@@ -125,6 +118,10 @@ class UserScheduleRepository implements IUserScheduleRepository {
         .collection('/comments')
         .where("slotID", isEqualTo: slotID)
         .getDocuments();
+
+    if(comments.documents.length == 0) {
+      return [];
+    }
 
     return comments.documents.map((doc) {
       return SlotComment.fromSnapshot(doc);
