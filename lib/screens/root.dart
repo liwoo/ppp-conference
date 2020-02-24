@@ -27,7 +27,6 @@ class _RootScreenState extends State<RootScreen> {
   int _conferenceDay;
 
   String expandedSlot;
-  var slots;
 
   @override
   void initState() {
@@ -37,101 +36,12 @@ class _RootScreenState extends State<RootScreen> {
         userScheduleRepository: UserScheduleRepository(Firestore.instance));
     _scheduleBloc.add(InitializeSchedule('tz4R3avRES42KNMkZbre'));
     expandedSlot = '';
-    slots = _generateSlots(context);
     super.initState();
   }
 
-  void changeExpandedSlot(String slotId) {
-    if (slotId == '') {
-      setState(() {
-        slots = _generateSlots(context);
-        expandedSlot = slotId;
-      });
-      print(slots);
-    }
 
-    if (slotId != '' && slotId != expandedSlot) {
-      setState(() {
-        slots = _generateSlots(context, slotId: slotId);
-        expandedSlot = slotId;
-      });
-
-      print(slots);
-    }
-  }
-
-  List<Widget> _generateSlots(BuildContext context, {String slotId = null}) {
-    if (slotId != null) {
-      var rest = _slots
-          .where((slot) => slot.id != slotId)
-          .map((slot) => SlotContainer(
-                slot: slot,
-                color: Colors.brown,
-                isExpanded: '65dh5yhs' == slot.id,
-                changeExpanded: (slotId) => changeExpandedSlot(slotId),
-              ))
-          .toList();
-      var slot = _slots.firstWhere((slot) => slot.id == slotId);
-
-      return [
-        ...rest,
-        Container(
-          width: double.infinity,
-          height: 400,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-            child: Container(
-              color: Colors.black.withOpacity(0.0),
-            ),
-          ),
-        ),
-        SlotContainer(
-          slot: slot,
-          color: Colors.brown,
-          isExpanded: '65dh5yhs' == slot.id,
-          changeExpanded: (slotId) => changeExpandedSlot(slotId),
-        )
-      ];
-    }
-
-    return _slots
-        .map((slot) => SlotContainer(
-              slot: slot,
-              changeExpanded: (slotId) => changeExpandedSlot(slotId),
-              color: Colors.brown,
-              isExpanded: expandedSlot == slot.id,
-            ))
-        .toList();
-  }
 
   final int timeIntervals = (CONFERENCE_END - CONFERENCE_START) * HOUR_SECTIONS;
-
-  final List<Slot> _slots = [
-    Slot(
-      id: '432435',
-      name: 'Module 1',
-      startTime: DateTime(2020, 2, 26, 8, 0),
-      endTime: DateTime(2020, 2, 26, 8, 45),
-    ),
-    Slot(
-      id: '65dh5yhs',
-      name: 'Module 2',
-      startTime: DateTime(2020, 2, 26, 9, 0),
-      endTime: DateTime(2020, 2, 26, 9, 30),
-    ),
-    Slot(
-      id: '4543437',
-      name: 'Module 3',
-      startTime: DateTime(2020, 2, 26, 9, 30),
-      endTime: DateTime(2020, 2, 26, 10, 0),
-    ),
-    Slot(
-      id: 'H3535k35',
-      name: 'Module 4',
-      startTime: DateTime(2020, 2, 26, 10, 30),
-      endTime: DateTime(2020, 2, 26, 11, 30),
-    ),
-  ];
 
   _changeConferenceDay(int page) {
     setState(() {
