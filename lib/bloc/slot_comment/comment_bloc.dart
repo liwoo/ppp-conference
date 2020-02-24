@@ -34,11 +34,11 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     }
 
     if(event is SendComment) {
-      var user = (authBloc.state as LoggedInState).user;
+//      var user = (authBlocloc.state as LoggedInState).user;
       var currentComments = (currentState as LoadedCommentsState).slotComments;
-      var commenter = user.displayName ?? user.phoneNumber ?? 'Anonymous';
-      var commenterImage = user.photoUrl;
-      var commenterID = user.uid;
+      var commenter = 'Anonymous User';//user.displayName ?? user.phoneNumber ?? 'Anonymous';
+      var commenterImage = '';//user.photoUrl;
+      var commenterID = 'generic';//user.uid;
       var newComment = SlotComment(
         commenterID: commenterID,
         comment: event.comment,
@@ -52,7 +52,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
         yield SentCommentState([...currentComments, newComment], event.slotId);
       } catch (e) {
         print(e);
-        FailedSendingCommentState(currentComments, event.slotId);
+        yield FailedSendingCommentState(currentComments, event.slotId);
       }
     }
   }

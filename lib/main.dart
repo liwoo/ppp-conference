@@ -52,18 +52,19 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
     return BlocProvider(
         create: (BuildContext context) => _authBloc,
         child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-          if (state is LoggedOutState) {
-            return LoginScreen();
-          } else if (state is LoggedInState)
-            return RootScreen(title: 'Schedule');
-          else if (state is MobilePinSentState)
-            return PhonePin();
-          else if (state is LoginFailed)
-            return LoginScreen(error: state.error);
-          else if (state is UserNotRegisteredState) {
-            return Register();
-          } else
-            return Splash();
+          return RootScreen(title: 'Schedule',);
+//          if (state is LoggedOutState) {
+//            return LoginScreen();
+//          } else if (state is LoggedInState)
+//            return RootScreen(title: 'Schedule');
+//          else if (state is MobilePinSentState)
+//            return PhonePin();
+//          else if (state is LoginFailed)
+//            return LoginScreen(error: state.error);
+//          else if (state is UserNotRegisteredState) {
+//            return Register();
+//          } else
+//            return Splash();
         }));
   }
 }

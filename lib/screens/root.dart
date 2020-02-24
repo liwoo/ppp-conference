@@ -93,26 +93,26 @@ class _RootScreenState extends State<RootScreen> {
                 ),
               ),
               preferredSize: Size.fromHeight(140)),
-          bottomNavigationBar: BottomNavigationBar(
-            onTap: changeRootPage,
-            backgroundColor: Colors.white,
-            selectedItemColor: Theme.of(context).primaryColor,
-            unselectedItemColor: Colors.grey[500],
-            selectedIconTheme: IconThemeData(
-              size: 28
-            ),
-
-            items: [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_today),
-                  title: Text('Schedule'),
-              ),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.settings),
-                  title: Text('Settings'),
-              ),
-            ],
-          ),
+//          bottomNavigationBar: BottomNavigationBar(
+//            onTap: changeRootPage,
+//            backgroundColor: Colors.white,
+//            selectedItemColor: Theme.of(context).primaryColor,
+//            unselectedItemColor: Colors.grey[500],
+//            selectedIconTheme: IconThemeData(
+//              size: 28
+//            ),
+//
+//            items: [
+//              BottomNavigationBarItem(
+//                  icon: Icon(Icons.calendar_today),
+//                  title: Text('Schedule'),
+//              ),
+//              BottomNavigationBarItem(
+//                  icon: Icon(Icons.settings),
+//                  title: Text('Settings'),
+//              ),
+//            ],
+//          ),
           body: state is LoadingScheduleState
               ? Loading()
               : state is FailedLoadingScheduleState

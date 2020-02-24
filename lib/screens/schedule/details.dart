@@ -51,15 +51,12 @@ class _SlotDetailsState extends State<SlotDetails> {
           brightness: Brightness.light,
           backgroundColor: widget.color,
           elevation: 0,
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.notifications),
-                onPressed: () => print('Setting Notification')),
-            IconButton(
-                icon: Icon(Icons.thumb_up), onPressed: () => print('Liking')),
-            IconButton(
-                icon: Icon(Icons.thumb_down), onPressed: () => print('Liking'))
-          ],
+//          actions: <Widget>[
+//            IconButton(
+//                icon: Icon(Icons.thumb_up), onPressed: () => print('Liking')),
+//            IconButton(
+//                icon: Icon(Icons.thumb_down), onPressed: () => print('Liking'))
+//          ],
           iconTheme: IconThemeData(color: Colors.grey[800]),
         ),
         floatingActionButton: Padding(
@@ -206,7 +203,7 @@ class _SlotDetailsState extends State<SlotDetails> {
         ? Text('Loading User')
         : InkWell(
             onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => SpeakerDetails())),
+                MaterialPageRoute(builder: (context) => SpeakerDetails(speaker: user))),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(

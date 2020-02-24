@@ -93,110 +93,95 @@ class _SlotContainerState extends State<SlotContainer> {
       onLongPressEnd: widget.duration.inMinutes < 45
           ? (details) => expandSlot(grow: false)
           : null,
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(12),
-                bottomRight: Radius.circular(12))),
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            if (isHappeningNow) buildStatusLight(),
-            if(widget.duration.inMinutes > 10) ...[
-              timeAndCategory(context)
-            ],
-            if (widget.duration.inMinutes > 15) ...[
-            SizedBox(
-              height: 4,
-            ),
-            Text('${widget.slot?.name ?? 'No Name Found'}',
-                style: Theme.of(context).textTheme.title),
-            SizedBox(
-              height: 4,
-            ),
-            Text(widget.slot.summary.length < 70
-                ? widget.slot.summary
-                : '${widget.slot.summary.substring(0, 70)}..'),
-            ],
-            if (widget.duration.inMinutes > 30) ...[
-              SizedBox(
-                height: 8,
-              ),
-              widget.slot.slotSpeakers != null
-                  ? FutureBuilder(
-                      future: widget.slot.slotSpeakers[0].get(),
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (snapshot.hasData) {
-                          var user = Attendee.fromSnapshot(snapshot.data);
-                          return UserListItem(
-                            name: user.fullName,
-                            nationality: user.countryEmoji,
-                            image: user.image,
-                          );
-                        }
-                        return UserListItem(
-                          name: 'Fetching Name',
-                          nationality: '🏳',
+      child: Stack(
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(12),
+                    bottomRight: Radius.circular(12))),
+            padding: const EdgeInsets.all(18.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                if(widget.duration.inMinutes > 10) ...[
+                  timeAndCategory(context)
+                ],
+                if (widget.duration.inMinutes > 15) ...[
+                SizedBox(
+                  height: 4,
+                ),
+                Text('${widget.slot?.name ?? 'No Name Found'}',
+                    style: Theme.of(context).textTheme.title),
+                SizedBox(
+                  height: 4,
+                ),
+                Text(widget.slot.summary.length < 70
+                    ? widget.slot.summary
+                    : '${widget.slot.summary.substring(0, 70)}..'),
+                ],
+                if (widget.duration.inMinutes > 30) ...[
+                  SizedBox(
+                    height: 8,
+                  ),
+                  widget.slot.slotSpeakers != null
+                      ? FutureBuilder(
+                          future: widget.slot.slotSpeakers[0].get(),
+                          builder: (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasData) {
+                              var user = Attendee.fromSnapshot(snapshot.data);
+                              return UserListItem(
+                                name: user.fullName,
+                                nationality: user.countryEmoji,
+                                image: user.image,
+                              );
+                            }
+                            return UserListItem(
+                              name: 'Fetching Name',
+                              nationality: '🏳',
+                              image:
+                                  'https://res.cloudinary.com/tiyeni/image/upload/v1582367167/pppc_Logo.png',
+                            );
+                          })
+                      : UserListItem(
+                          name: 'PPPC',
+                          nationality: '🇲🇼',
                           image:
                               'https://res.cloudinary.com/tiyeni/image/upload/v1582367167/pppc_Logo.png',
-                        );
-                      })
-                  : UserListItem(
-                      name: 'PPPC',
-                      nationality: '🇲🇼',
-                      image:
-                          'https://res.cloudinary.com/tiyeni/image/upload/v1582367167/pppc_Logo.png',
-                    )
-            ],
-            if (widget.duration.inMinutes > 50) ...[
-              SizedBox(
-                height: 12,
-              ),
-              widget.category.toLowerCase() == 'refreshments'
-                  ? Text(
-                      '🌮',
-                      style: Theme.of(context).textTheme.display3,
-                      textAlign: TextAlign.center,
-                    )
-                  : Container(
-                      decoration: BoxDecoration(
-                          border:
-                              Border(top: BorderSide(color: Colors.grey[400]))),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(
-                              Icons.add_alert,
-                              color: Colors.grey,
-                            ),
-                            iconSize: 38,
-                            onPressed: () => print('alerting'),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.thumb_up,
-                              color: Colors.grey,
-                            ),
-                            iconSize: 38,
-                            onPressed: () => print('liking'),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.thumb_down,
-                              color: Colors.grey,
-                            ),
-                            iconSize: 38,
-                            onPressed: () => print('disliking'),
+                        )
+                ],
+                if (widget.duration.inMinutes > 50) ...[
+                  SizedBox(
+                    height: 12,
+                  ),
+                  widget.category.toLowerCase() == 'refreshments'
+                      ? Text(
+                          '🌮',
+                          style: Theme.of(context).textTheme.display3,
+                          textAlign: TextAlign.center,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                              border:
+                                  Border(top: BorderSide(color: Colors.grey[400]))),
+                          child: Column(
+                            children: <Widget>[
+                              Icon(Icons.comment, size: 72, color: widget.color,),
+                              Text('${widget.slot.comments} Comment${widget.slot.comments==0 ? 's' : ''}', style: TextStyle(fontStyle: FontStyle.italic),)
+                            ],
                           )
-                        ],
-                      ),
-                    )
-            ]
-          ],
-        ),
+                        ),
+                ]
+              ],
+            ),
+          ),
+          if (isHappeningNow)
+          Positioned(right: 10, top: 5, child: buildStatusLight()),
+        ],
       ),
     );
   }

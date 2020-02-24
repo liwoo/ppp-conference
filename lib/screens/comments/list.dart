@@ -87,7 +87,7 @@ class CommentList extends StatelessWidget {
         Container(
             width: 30,
             height: 30,
-            padding: EdgeInsets.symmetric(vertical: 6, horizontal: splitCommenter.length == 1 ? 10 : 5),
+            padding: EdgeInsets.symmetric(vertical: 6, horizontal: splitCommenter.length == 1 ? 10 : 4),
             decoration: BoxDecoration(
                 color: color,
                 borderRadius: BorderRadius.all(Radius.circular(99))),

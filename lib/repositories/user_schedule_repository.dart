@@ -117,7 +117,14 @@ class UserScheduleRepository implements IUserScheduleRepository {
     await firestore
         .collection('/comments')
         .add({'comment': comment, 'commenter': commenter, 'slotID': slotID, commenterID: commenterID, 'time': DateTime.now()});
+    final slot = await _fetchSlotDetails(slotID, commenterID);
+    var documentComments = slot['comments'] ?? [];
+    await firestore
+        .collection(path)
+        .document(slotID)
+        .updateData({'comments': documentComments.length += 1});
   }
+
 
   @override
   Future<List<SlotComment>> fetchSlotComments(String slotID) async {

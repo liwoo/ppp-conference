@@ -8,7 +8,12 @@ class CommentForm extends StatefulWidget {
   final Color color;
   final String slotId;
 
-  const CommentForm({Key key, @required this.bloc, @required this.color, @required this.slotId}) : super(key: key);
+  const CommentForm(
+      {Key key,
+      @required this.bloc,
+      @required this.color,
+      @required this.slotId})
+      : super(key: key);
 
   @override
   _CommentFormState createState() => _CommentFormState();
@@ -46,7 +51,11 @@ class _CommentFormState extends State<CommentForm> {
         child: ListView(
           padding: EdgeInsets.all(18),
           children: <Widget>[
-            CommentList(bloc: widget.bloc, context: context, color: widget.color, slotId: widget.slotId)
+            CommentList(
+                bloc: widget.bloc,
+                context: context,
+                color: widget.color,
+                slotId: widget.slotId)
           ],
         ),
       ),
@@ -76,11 +85,21 @@ class _CommentFormState extends State<CommentForm> {
                   child: TextField(
                     controller: _controller,
                     onTap: () async {
-                      await Future.delayed(Duration(milliseconds: 200));
+                      await Future.delayed(Duration(milliseconds: 100)); //hack
                       setState(() {
                         _keyboardHeihgt =
                             MediaQuery.of(context).viewInsets.bottom;
                       });
+                    },
+                    onChanged: (text) => {
+                      if (_keyboardHeihgt !=
+                          MediaQuery.of(context).viewInsets.bottom)
+                        {
+                          setState(() {
+                            _keyboardHeihgt =
+                                MediaQuery.of(context).viewInsets.bottom;
+                          })
+                        }
                     },
                     onSubmitted: (text) {
                       setState(() {
@@ -107,9 +126,9 @@ class _CommentFormState extends State<CommentForm> {
                 onPressed: () {
                   var comment = _controller.text;
                   _controller.clear();
-                  widget.bloc.add(SendComment('someID', comment, widget.slotId));
+                  widget.bloc
+                      .add(SendComment('someID', comment, widget.slotId));
                   dismissKeyboard(context);
-
                 },
               )
             ],

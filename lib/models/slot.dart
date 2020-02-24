@@ -7,6 +7,7 @@ class Slot {
   String summaryHTML;
   DateTime startTime;
   DateTime endTime;
+  int comments;
   bool isLiked, isDisliked, isBookmarked;
   Future<DocumentSnapshot> category;
   List<DocumentReference> slotFacilitators;
@@ -19,6 +20,7 @@ class Slot {
       this.startTime,
       this.summary,
       this.isBookmarked,
+        this.comments,
       this.isLiked,
       this.isDisliked,
       this.category,
@@ -49,6 +51,7 @@ class Slot {
         category: snap.data['category'].get() ?? '',
         slotFacilitators: facilitators,
         slotPanelists: snap.data['slotPanelists'],
+        comments: snap.data['comments'] ?? 0,
         slotSpeakers: speakers,
         isBookmarked: isBookmarked,
         isLiked: isLiked,
