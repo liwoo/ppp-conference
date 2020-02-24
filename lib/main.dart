@@ -162,11 +162,17 @@ class LoginScreen extends StatelessWidget {
                     SizedBox(
                       height: 60,
                     ),
-                    LoginButton(title: 'Sign in with Google', color: Color(0xFFC84949), onPressed: _loginToGoogle),
+                    LoginButton(
+                        title: 'Sign in with Google',
+                        color: Color(0xFFC84949),
+                        onPressed: _loginToGoogle),
                     SizedBox(
                       height: 24,
                     ),
-                    LoginButton(title: 'Sign in with Apple', color: Colors.grey[900], onPressed: _loginToGoogle),
+                    LoginButton(
+                        title: 'Sign in with Apple',
+                        color: Colors.grey[900],
+                        onPressed: _loginToGoogle),
                     SizedBox(
                       height: 24,
                     ),
@@ -420,7 +426,6 @@ class _PhonePinState extends State<PhonePin> {
   Container buildPinField(BuildContext context,
       TextEditingController controller, FocusNode focusNode) {
     void submit() {
-
       var pin = "${t1.text}${t2.text}${t3.text}${t4.text}${t5.text}${t6.text}";
       print(t1.text);
       print(pin);
@@ -456,6 +461,10 @@ class _PhonePinState extends State<PhonePin> {
 class Register extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    void _logout() {
+      BlocProvider.of<AuthBloc>(context).add(Logout());
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).canvasColor,
@@ -488,13 +497,18 @@ class Register extends StatelessWidget {
             SizedBox(
               height: 24,
             ),
-            Text('Don\'t worry.  This could be a mistake on our end.  Please contact the administrator to rectify this problem.'),
+            Text(
+                'Don\'t worry.  This could be a mistake on our end.  Please contact the administrator to rectify this problem.'),
             SizedBox(
               height: 24,
             ),
             Container(
               width: double.infinity,
-              child: LoginButton(title: 'Logout and Try Again', color: Theme.of(context).primaryColor, onPressed: () => 'logging out',),
+              child: LoginButton(
+                title: 'Logout and Try Again',
+                color: Theme.of(context).primaryColor,
+                onPressed: _logout,
+              ),
             )
           ],
         ),
