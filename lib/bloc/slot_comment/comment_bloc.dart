@@ -36,7 +36,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
     if(event is SendComment) {
       var user = (authBloc.state as LoggedInState).user;
       var currentComments = (currentState as LoadedCommentsState).slotComments;
-      var commenter = user.displayName;
+      var commenter = user.displayName ?? user.phoneNumber ?? 'Anonymous';
       var commenterImage = user.photoUrl;
       var commenterID = user.uid;
       var newComment = SlotComment(
