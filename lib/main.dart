@@ -236,7 +236,7 @@ class LoginScreen extends StatelessWidget {
                 border: Border.all(color: Colors.grey[500])),
             child: TextField(
               controller: phoneLoginController,
-              keyboardType: TextInputType.numberWithOptions(),
+              keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                   border: InputBorder.none, hintText: 'Or Enter Phone Number'),
             ),
